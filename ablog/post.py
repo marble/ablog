@@ -344,15 +344,22 @@ def process_postlist(app, doctree, docname):
                                           **node.attributes))
         if node.attributes['sort']:
             posts.sort() # in reverse chronological order, so no reverse=True
-        bl = nodes.bullet_list()
+        bl = nodes.bullet_list(classes=['postlist'])
         for post in posts:
             bli = nodes.list_item()
             bl.append(bli)
             par = nodes.paragraph()
 
+
+            tags_str = ', '.join([str(t) for t in post.tags])
+            if 1 and tags_str:
+                il = nodes.inline()
+                il.attributes['classes'] = ['postlist-item-tags']
+                il.append(nodes.Text(tags_str))
+                par.append(il)
             if True:
                 par.append(nodes.Text(
-                    post.date.strftime(_(blog.post_date_format)) + ' - '))
+                    post.date.strftime(_(blog.post_date_format)) + '\\n'))
 
             bli.append(par)
             ref = nodes.reference()
@@ -375,6 +382,25 @@ def process_postlist(app, doctree, docname):
 def generate_archive_pages(app):
     """Generate archive pages for all posts, categories, tags, authors, and
     drafts."""
+
+    ##if 0:
+    ##
+    ##    # the total count of lines for each index letter, used to distribute
+    ##    # the entries into two columns
+    ##    genindex = app.builder.env.create_index(app)
+    ##    indexcounts = []
+    ##    for _, entries in genindex:
+    ##        indexcounts.append(sum(1 + len(subitems)
+    ##                               for _, (_, subitems) in entries))
+    ##
+    ##    genindexcontext = dict(
+    ##        genindexentries = genindex,
+    ##        genindexcounts = indexcounts,
+    ##        split_index = app.builder.config.html_split_index,
+    ##    )
+    ##
+    ##    yield ('blog/ndx/mygenindex', genindexcontext, 'mygenindex.html')
+
 
     blog = Blog(app)
     for post in blog.posts:
